@@ -14,12 +14,11 @@ class WebViewX extends StatefulWidget {
 }
 
 class _WebViewXState extends State<WebViewX> {
-  late final String _viewType;
+  final String _viewType = 'webview-${UniqueKey()}';
 
   @override
   void initState() {
     super.initState();
-    _viewType = 'webview-${DateTime.now().millisecondsSinceEpoch}';
     ui_web.platformViewRegistry.registerViewFactory(_viewType, (int viewId) {
       return HTMLIFrameElement()
         ..src = widget.url
