@@ -15,26 +15,18 @@ class WebViewX extends StatefulWidget {
 
 class _WebViewXState extends State<WebViewX> {
   late final String _viewType;
-  bool _viewRegistered = false;
 
   @override
   void initState() {
     super.initState();
     _viewType = 'webview-${DateTime.now().millisecondsSinceEpoch}';
-    if (!_viewRegistered) {
-      final url = widget.url.startsWith('web://')
-          ? '/${widget.url.replaceFirst('web://', '')}'
-          : widget.url;
-      ui_web.platformViewRegistry.registerViewFactory(_viewType, (int viewId) {
-        final iframe = HTMLIFrameElement()
-          ..src = url
-          ..style.border = 'none'
-          ..style.width = '100%'
-          ..style.height = '100%';
-        return iframe;
-      });
-      _viewRegistered = true;
-    }
+    ui_web.platformViewRegistry.registerViewFactory(_viewType, (int viewId) {
+      return HTMLIFrameElement()
+        ..src = widget.url
+        ..style.border = 'none'
+        ..style.width = '100%'
+        ..style.height = '100%';
+    });
   }
 
   @override

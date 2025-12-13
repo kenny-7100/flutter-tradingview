@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewX extends StatefulWidget {
@@ -20,19 +19,8 @@ class _WebViewXState extends State<WebViewX> {
   void initState() {
     super.initState();
     _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted);
-    _loadContent();
-  }
-
-  Future<void> _loadContent() async {
-    final url = widget.url;
-    if (url.startsWith('web://')) {
-      final assetPath = url.replaceFirst('web://', 'web/');
-      final htmlContent = await rootBundle.loadString(assetPath);
-      await _controller.loadHtmlString(htmlContent);
-    } else {
-      await _controller.loadRequest(Uri.parse(url));
-    }
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.parse(widget.url));
   }
 
   @override
