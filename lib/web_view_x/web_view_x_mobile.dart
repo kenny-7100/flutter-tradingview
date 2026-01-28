@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -11,12 +11,8 @@ class WebViewX extends StatefulWidget {
     this.height,
   });
 
-  /// 远程 URL (如 http://192.168.0.114:3000)
   final String? url;
-
-  /// 本地资源路径 (如 assets/website/index.html)
   final String? assetPath;
-
   final double? width;
   final double? height;
 
@@ -25,67 +21,67 @@ class WebViewX extends StatefulWidget {
 }
 
 class _WebViewXState extends State<WebViewX> {
-  late InAppWebViewSettings _settings;
+  InAppLocalhostServer? _localhostServer;
+  String? _serverUrl;
+  bool _isReady = false;
+
+  final _settings = InAppWebViewSettings(
+    javaScriptEnabled: true,
+    mediaPlaybackRequiresUserGesture: false,
+    allowsInlineMediaPlayback: true,
+    isInspectable: kDebugMode,
+  );
 
   @override
   void initState() {
     super.initState();
-    _settings = InAppWebViewSettings(
-      javaScriptEnabled: true,
-      mediaPlaybackRequiresUserGesture: false,
-      allowsInlineMediaPlayback: true,
-      // Android: 使用 WebViewAssetLoader 以 http 形式加载本地资源
-      webViewAssetLoader: Platform.isAndroid && widget.assetPath != null
-          ? WebViewAssetLoader(
-              pathHandlers: [
-                AssetsPathHandler(path: '/assets/'),
-              ],
-            )
-          : null,
-    );
+    if (widget.assetPath != null) {
+      _startLocalServer();
+    } else {
+      _isReady = true;
+    }
+  }
+
+  Future<void> _startLocalServer() async {
+    _localhostServer = InAppLocalhostServer(documentRoot: 'assets/website');
+    await _localhostServer!.start();
+    setState(() {
+      _serverUrl = 'http://localhost:8080/index.html';
+      _isReady = true;
+    });
+  }
+
+  @override
+  void dispose() {
+    _localhostServer?.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!_isReady) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final loadUrl = widget.url ?? _serverUrl;
+    if (loadUrl == null) {
+      return const SizedBox.shrink();
+    }
+
     return SizedBox(
       width: widget.width ?? double.infinity,
       height: widget.height ?? double.infinity,
-      child: _buildWebView(),
-    );
-  }
-
-  Widget _buildWebView() {
-    // 如果指定了远程 URL，直接加载
-    if (widget.url != null) {
-      return InAppWebView(
-        initialUrlRequest: URLRequest(url: WebUri(widget.url!)),
+      child: InAppWebView(
+        initialUrlRequest: URLRequest(url: WebUri(loadUrl)),
         initialSettings: _settings,
-      );
-    }
-
-    // 如果指定了本地资源路径
-    if (widget.assetPath != null) {
-      if (Platform.isAndroid) {
-        // Android: 使用 WebViewAssetLoader，通过 http URL 加载
-        final assetUrl =
-            'https://appassets.androidplatform.net/assets/flutter_assets/${widget.assetPath}';
-        return InAppWebView(
-          initialUrlRequest: URLRequest(url: WebUri(assetUrl)),
-          initialSettings: _settings,
-        );
-      } else {
-        // iOS: 直接使用 initialFile 加载本地文件
-        return InAppWebView(
-          initialFile: widget.assetPath,
-          initialSettings: _settings,
-        );
-      }
-    }
-
-    // 默认显示空白页
-    return InAppWebView(
-      initialData: InAppWebViewInitialData(data: '<html><body></body></html>'),
-      initialSettings: _settings,
+        onConsoleMessage: (controller, msg) {
+          final level = msg.messageLevel.toString().split('.').last;
+          debugPrint('[WebView][$level] ${msg.message}');
+        },
+        onReceivedError: (controller, request, error) {
+          debugPrint('[WebView Error] ${request.url}: ${error.description}');
+        },
+      ),
     );
   }
 }
