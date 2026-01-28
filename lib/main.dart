@@ -37,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: const WebViewX(url: 'http://192.168.0.114:3000', height: 640),
+      body: const WebViewX(url: 'http://192.168.0.103:3000', height: 640),
     );
   }
 }
