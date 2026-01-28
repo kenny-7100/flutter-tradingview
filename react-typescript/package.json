@@ -9,7 +9,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && pnpm run copy-to-flutter",
+    "build:only": "react-scripts build",
+    "copy-to-flutter": "rm -rf ../assets/website && cp -r build ../assets/website",
     "test": "react-scripts test"
   },
   "devDependencies": {
