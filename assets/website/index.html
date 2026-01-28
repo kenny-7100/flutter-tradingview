@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flutter Local WebView</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 本地站点加载成功!</h1>
+        <p class="subtitle">这是从 Flutter assets 加载的本地网站</p>
+        
+        <div class="card">
+            <h2>功能演示</h2>
+            <p id="message">点击下方按钮测试 JavaScript</p>
+            <button id="testBtn">点击测试</button>
+            <p id="counter">点击次数: 0</p>
+        </div>
+        
+        <div class="info">
+            <p>✅ HTML 加载正常</p>
+            <p>✅ CSS 样式正常</p>
+            <p id="jsStatus">⏳ JavaScript 检测中...</p>
+        </div>
+    </div>
+    
+    <script src="index.js"></script>
+</body>
+</html>
+

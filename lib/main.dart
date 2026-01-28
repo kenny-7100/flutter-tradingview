@@ -37,7 +37,13 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: const WebViewX(url: 'http://192.168.0.103:3000', height: 640),
+      // 加载本地资源站点
+      body: const WebViewX(
+        assetPath: 'assets/website/index.html',
+        height: 640,
+      ),
+      // 如需加载远程 URL，使用:
+      // body: const WebViewX(url: 'http://192.168.0.103:3000', height: 640),
     );
   }
 }
