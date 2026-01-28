@@ -71,8 +71,15 @@ export const TVChartContainer = () => {
 		};
 
 		const tvWidget = new widget(widgetOptions);
+		(window as any).tvWidget = tvWidget;
 
 		tvWidget.onChartReady(() => {
+			console.log('[TradingView] Chart ready');
+
+			if ((window as any).flutterBridge?.emit) {
+				(window as any).flutterBridge.emit('chartReady', {});
+			}
+
 			tvWidget.headerReady().then(() => {
 				const button = tvWidget.createButton();
 				button.setAttribute('title', 'Click to show a notification popup');
@@ -86,9 +93,20 @@ export const TVChartContainer = () => {
 					}));
 				button.innerHTML = 'Check API';
 			});
+
+			tvWidget.subscribe('onSymbolChange', () => {
+				const symbolInfo = tvWidget.symbolInterval();
+				if ((window as any).flutterBridge?.emit) {
+					(window as any).flutterBridge.emit('symbolChange', {
+						symbol: symbolInfo.symbol,
+						interval: symbolInfo.interval,
+					});
+				}
+			});
 		});
 
 		return () => {
+			(window as any).tvWidget = null;
 			tvWidget.remove();
 		};
 	});
