@@ -2,6 +2,7 @@
   "name": "charting-library-react-example",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "react": "19.0.0",
     "react-dom": "19.0.0",
@@ -9,7 +10,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && pnpm run copy-to-flutter",
+    "build:only": "react-scripts build",
+    "copy-to-flutter": "rm -rf ../assets/website && cp -r build ../assets/website",
     "test": "react-scripts test"
   },
   "devDependencies": {
